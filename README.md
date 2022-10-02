@@ -1,1 +1,1 @@
-# MeicalSSL
+# Medical-SSL
