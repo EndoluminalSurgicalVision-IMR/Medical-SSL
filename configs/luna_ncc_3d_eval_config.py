@@ -29,22 +29,10 @@ parser.add_argument('--normalization', type=str, choices=['sigmoid', 'softmax', 
                     default='sigmoid', help="the normalization of output")
 parser.add_argument('--val_batch', type=int, default=64, help="val_batch")
 parser.add_argument('--num_workers', type=int, default=0, help="dataloader numworkers")
-parser.add_argument('--model_path', type=str, default= '../checkpoints/luna_ncc_imbalance/unet_3d_dense_Simple_RKB_size_5000_ratio_0.1_resample/20220824-230658/model_best.pth')
-parser.add_argument('--save_results_path', type=str, default='../results/luna_ncc_imbalance/test_luna_ncc_RKB_size_5000_ratio_0.1')
+parser.add_argument('--model_path', type=str, default= None)
+parser.add_argument('--save_results_path', type=str, default=None)
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
     Tester = Classification2CTester(args)
-    Tester.test_all_cases()
-    # Number of images in test: 166225
-
-    # args.model_path = '../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_mypcrl_pretrained(order_xyz)_100/20220404-005220/model_best.pth'
-    # args.save_results_path = '../results/test_luna_ncc_pcrl(order_xyz)_shuffle_test_data'
-    # Tester = Classification2CTester(args)
-    # Tester.test_all_cases()
-    #
-    # args.model_path = '../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_rcb_pretrained(order_xyz)/20220424-154534/model_best.pth'
-    # args.save_results_path = '../results/test_luna_ncc_rcb(order_xyz)_shuffle_test_data'
-    # Tester = Classification2CTester(args)
-    # Tester.test_all_cases()
