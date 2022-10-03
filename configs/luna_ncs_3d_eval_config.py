@@ -30,7 +30,7 @@ parser.add_argument('--normalization', type=str, choices=['sigmoid', 'softmax', 
                     default='sigmoid', help="the normalization of output")
 parser.add_argument('--val_batch', type=int, default=16, help="val_batch")
 parser.add_argument('--num_workers', type=int, default=0, help="dataloader numworkers")
-parser.add_argument('--model_path', type=str, default='../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_MG_pretrained_(order_xyz)/20220314-161149/model_best.pth')
+parser.add_argument('--model_path', type=str, default= None)
 parser.add_argument('--save_results_path', type=str, default='../results/test_luna_ncs_from_scratch')
 
 
