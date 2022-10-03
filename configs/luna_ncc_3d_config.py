@@ -38,7 +38,7 @@ class ncc_config:
     optimizer = 'adam'
     scheduler = None
     lr = 1e-3
-    patience = 10#10
+    patience = 10
     verbose = 1
     train_batch = 24
     val_batch = 64
@@ -49,15 +49,14 @@ class ncc_config:
     loss = 'bce'
 
     # pretrain
-    resume = '../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_rcb_(order_xyz)_repeat/20220812-223552/model_best.pth'#'../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_SSM_ROT_48(order_xyz)_V2_repeat/20220804-110123/model_best.pth'#'../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_RKB_100_orders_128(order_xyz)/20220721-151436/model_best.pth'#'../checkpoints/luna_ncc/unet_3d_dense_Simple_luna_ncc_BYOL(order_xyz)/20220620-105729/model_best.pth'
-    pretrained_model =  None#'../checkpoints/luna_rkb_pretask/unet_3d_rkb_Simple_RKB_128_128_32_ct/20220720-233027/RKB_100_order_CT.pth'#'../checkpoints/luna_cl_pretask/unet_3d_dense_BYOL_byol_luna/20220618-203019/470.pth'#'../checkpoints/luna_ssm_rot_pretask_v2/unet_3d_dense_Simple_SSM_Rot_random_crop_48_48_48_v2/SSM_ROT_v2_48_CT.pth'#'../checkpoints/luna_ssm_rpl_pretask/SSM_RPL48_CT.pth'#'../checkpoints/luna_rkbp_pretask/unet_3d_rkbp_Simple_RKBPlus_128_128_32_ct/20220723-202040/RKBP_300_CT.pth' #'../checkpoints/luna_rkb_pretask/unet_3d_rkb_Simple_RKB_128_128_32_ct/20220720-233027/RCB_CT.pth' #'../checkpoints/luna_jigsaw_pretask/unet_3d_jigsaw_Simple_JigSaw_resize_half_128_128_32_ct/20220714-082932/RCB_CT.pth' #'../checkpoints/luna_cl_pretask/unet_3d_dense_SimCLR_simclr_luna/20220621-101217/380.pth'#'../checkpoints/luna_cl_pretask/unet_3d_dense_BYOL_byol_luna/20220618-203019/470.pth'#'../checkpoints/luna_ssm_rpl_pretask/SSM_RPL64_CT.pth' #'../checkpoints/luna_pcrl_pretask/pcrl_3d_PCRL_Model_mypcrl_luna_random_aug_tensor/20220531-221542/95.pth' #'../checkpoints/luna_ssm_rot_pretask/SSM_Rot_CT_64.pth'#'../checkpoints/luna_mg_pretask/unet_3d_wo_skip_Simple_genesis_chest_ct/20220423-145224/Genesis_Chest_CT_66.pth'#'../checkpoints/luna_ssm_rot_pretask/SSM_Rot_CT_64.pth'#'../checkpoints/luna_mg_pretask/unet_3d_wo_skip_Simple_genesis_chest_ct/20220423-145224/Genesis_Chest_CT_66.pth'#'../checkpoints/luna_ssm_rot_pretask/SSM_Rot_CT_64.pth' #'../checkpoints/luna_mg_pretask/unet_3d_Simple_genesis_chest_ct/20220311-161634/Genesis_Chest_CT_250.pth'#'../checkpoints/luna_mg_pretask/unet_3d_wo_skip_Simple_genesis_chest_ct/20220423-145224/Genesis_Chest_CT_66.pth'#'../checkpoints/luna_rcb_pretask/unet_3d_rcb_Simple_RCB_ct/20220418-083822/RCB_CT_473.pth' #'../checkpoints/luna_mg_pretask/unet_3d_Simple_genesis_chest_ct/20220311-161634/Genesis_Chest_CT_250.pth'#'../checkpoints/luna_pcrl_pretask/mypcrl_100.pth' #'../checkpoints/luna_mg_pretask/unet_3d_Simple_genesis_chest_ct/20220311-161634/Genesis_Chest_CT_250.pth'
+    resume = None
+    pretrained_model =  None
     transferred_part = 'encoder'#'encoder'
-    ## pretrained model keys: transferred_dismatched_keys[0A]; fine-tuned model keys: transferred_dismatched_keys[1]
-#   ## ['module.', 'module.encoder.'] for mg/pcrl
+    ## pretrained model keys: transferred_dismatched_keys[0]; fine-tuned model keys: transferred_dismatched_keys[1]
+    ## ['module.', 'module.encoder.'] for MG/PCRL
     ## None for RCB/SSM/CL/Jigsaw/BYOL
-    transferred_dismatched_keys = None#['module.', 'module.encoder.']
-    # transfer_bn_buffer = True
-    # transfer_bn_all = True
+    transferred_dismatched_keys = None #['module.', 'module.encoder.']
+   
 
     def display(self, logger):
         logger.info("Configurations")
