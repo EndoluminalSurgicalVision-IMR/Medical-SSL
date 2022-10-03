@@ -40,8 +40,8 @@ parser.add_argument('--test_cut_params', type=dict, default={'patch_d': 32,
                             'stride_w': 256}, help=" the params for cutting patches in test stage")
 parser.add_argument('--val_batch', type=int, default=1, help="val_batch")
 parser.add_argument('--num_workers', type=int, default=0, help="dataloader numworkers")
-parser.add_argument('--model_path', type=str, default= '../checkpoints/lits_seg_train/unet_3d_Simple_lits_seg_byol_online_pretrained/20220626-091652/best_model.pth')
-parser.add_argument('--save_results_path', type=str, default='../results/test_lits_seg_BYOL_online_pretrained_eval_bn')
+parser.add_argument('--model_path', type=str, default= None)
+parser.add_argument('--save_results_path', type=str, default=None)
 
 # '../checkpoints/lits_seg_train/unet_3d_Simple_lits_seg_from_scratch(kaiming)/20220319-231902/best_model.pth'--dice=94.7%
 if __name__ == '__main__':
