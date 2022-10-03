@@ -49,7 +49,7 @@ class ssm_rot_config:
     loss = 'ce'
 
     # logs
-    resume = None#'../checkpoints/luna_rot_pretask/unet_3d_dense_Simple_SSM_Rot/20220403-234738/SSM_Rot_CT_64.pth'
+    resume = None
     pretrained_model = None
     def display(self, logger):
         """Display Configuration values."""
