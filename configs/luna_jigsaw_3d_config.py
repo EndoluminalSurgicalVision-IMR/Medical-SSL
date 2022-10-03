@@ -49,7 +49,7 @@ class jigsaw_config:
     loss = 'ce'
 
     # logs
-    resume = None #'../checkpoints/luna_jigsaw_pretask/unet_3d_jigsaw_Simple_JigSaw_resize_half_128_128_32_ct/20220713-221941/RCB_CT.pth' # '../checkpoints/luna_jigsaw_pretask/unet_3d_jigsaw_Simple_JigSaw_ct/20220711-203529/RCB_CT.pth' #'../checkpoints/luna_rcb_pretask/unet_3d_rcb_Simple_RCB_ct/20220417-205908/RCB_CT.pth'
+    resume = None 
     pretrained_model = None
 
     def display(self, logger):
