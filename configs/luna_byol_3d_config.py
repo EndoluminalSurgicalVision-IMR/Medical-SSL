@@ -46,7 +46,7 @@ class byol_config:
     lr = 1e-4#0.05
 
     # logs
-    resume = '../checkpoints/luna_cl_pretask/unet_3d_dense_BYOL_byol_luna/20220618-143852/300.pth'#'../checkpoints/luna_cl_pretask/unet_3d_dense_BYOL_byol_luna/20220617-110048/290.pth'#'../checkpoints/luna_pcrl_pretask/pcrl_3d_PCRL_Model_mypcrl_luna/20220328-235653/10.pth'
+    resume = None
     pretrained_model = None
 
     def display(self, logger):
