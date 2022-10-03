@@ -41,11 +41,10 @@ class ncs_config:
     max_queue_size = num_workers * 1
     epochs = 10000
     loss = 'dice'
-    # loss_weight = [2]
 
     # pretrain
     resume = None
-    pretrained_model = None #'../checkpoints/luna_mg_pretask/unet_3d_Simple_genesis_chest_ct/20220311-161634/Genesis_Chest_CT_250.pth'
+    pretrained_model = None
     transferred_part = 'all'
     ## pretrained model keys: transferred_dismatched_keys[0]; fine-tuned model keys: transferred_dismatched_keys[1]
     transferred_dismatched_keys = None
