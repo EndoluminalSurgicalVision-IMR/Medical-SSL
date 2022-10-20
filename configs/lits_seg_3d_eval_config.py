@@ -43,7 +43,7 @@ parser.add_argument('--num_workers', type=int, default=0, help="dataloader numwo
 parser.add_argument('--model_path', type=str, default= None)
 parser.add_argument('--save_results_path', type=str, default=None)
 
-# '../checkpoints/lits_seg_train/unet_3d_Simple_lits_seg_from_scratch(kaiming)/20220319-231902/best_model.pth'--dice=94.7%
+
 if __name__ == '__main__':
     args = parser.parse_args()
     Tester = Seg3DTester(args)
