@@ -351,9 +351,8 @@ def one_hot_reverse(one_hot_label):
     Input label: [K, D, H, W].
     Output label: [D, H, W].
     """
-    # label = np.zeros((one_hot_label.shape[-3], one_hot_label.shape[-2], one_hot_label.shape[-1]))
-    # for i in range(one_hot_label.shape[0]):
-    #     label[one_hot_label[i, :] == 1] = np.int32(i + 1)
-    label = np.argmax(one_hot_label, 0).astype(np.uint8)
+    label = np.zeros((one_hot_label.shape[-3], one_hot_label.shape[-2], one_hot_label.shape[-1]))
+    for i in range(one_hot_label.shape[0]):
+        label[one_hot_label[i, :] == 1] = np.int32(i + 1)
     return label
 
