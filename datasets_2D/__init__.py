@@ -6,6 +6,7 @@ from datasets_2D.CL.eyepacs_CL_pretask import CLEyepacsPretaskSet
 from datasets_2D.PTP.eyepacs_rot_pretask import RotEyepacsPretaskSet
 from datasets_2D.PTP.eyepacs_rpl_pretask import RPLEyepacsPretaskSet
 from datasets_2D.Jigsaw.eyepacs_jigsaw_pretask import JigSawEyepacsPretaskSet
+from datasets_2D.Seg.drive_segmentation import SegDRIVESet
 from datasets_2D.paths import Path
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
@@ -18,7 +19,8 @@ datasets_dict_2D = {
     'eyepacs_pcrl_pretask':PCRLEyepacsPretaskSet,
     'eyepacs_rot_pretask': RotEyepacsPretaskSet,
     'eyepacs_rpl_pretask': RPLEyepacsPretaskSet,
-    'eyepacs_jigsaw_pretask':JigSawEyepacsPretaskSet}
+    'eyepacs_jigsaw_pretask':JigSawEyepacsPretaskSet,
+    'drive_seg': SegDRIVESet}
 
 
 
