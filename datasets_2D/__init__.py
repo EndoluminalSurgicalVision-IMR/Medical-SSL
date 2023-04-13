@@ -46,7 +46,6 @@ def get_dataloder_2D(args, flag="train", drop_last=True):
         root = Path.db_root_dir(datasets_name)
         dataset = datasets_dict_2D[datasets_name](config=args, base_dir=root, flag=flag)
         batch_size = args.val_batch
-        # shuffle = False
         shuffle = False
         # num_workers = args.num_workers
         num_workers = 0
