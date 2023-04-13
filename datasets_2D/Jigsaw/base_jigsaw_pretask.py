@@ -36,7 +36,6 @@ class JigsawBase(Dataset):
 
     def crop_2d(self, image, flag, crop_size):
         h, w = crop_size[0], crop_size[1]
-        # h_old, w_old = image.shape[0], image.shape[1]
         h_old, w_old = image.size()[1], image.size()[2]
 
         if flag == 'train':
@@ -89,8 +88,6 @@ class JigsawBase(Dataset):
         return cubes
 
     def rearrange(self, cubes, K_permutations):
-        # print('cube size', cubes.size(), K_permutations)
         label = random.randint(0, len(K_permutations) - 1)
-        # print('label', np.array(K_permutations[label]), label)
         return cubes[K_permutations[label]], label
 
