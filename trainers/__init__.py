@@ -16,4 +16,5 @@ from trainers.seg3d_trainer import Seg3DTrainer # for simple one-object segmenta
 from trainers.seg3d_ROI_trainer import Seg3DROITrainer # for NCS, in which the ROI regions have been cropped.
 from trainers.seg3d_mclasses_trainer import Seg3DMCTrainer # for multi-object segmentation (>=2)
 from trainers.classification_trainer import ClassificationTrainer
-
+from trainers.classification2d_trainer import Classification2DTrainer
+from trainers.seg2d_trainer import Seg2DROITrainer
