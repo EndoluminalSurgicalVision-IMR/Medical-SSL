@@ -29,6 +29,7 @@ from utils.recorder import Recorder
 # from nnunet.training.loss_functions.dice_loss import *
 
 from utils.metrics import SegMetric_Numpy, SegMetric_Tensor
+from utils.tools import AverageMeter, select_target_type
 
 """
 BaseTrainer is for all the pretext tasks and downstream tasks.
