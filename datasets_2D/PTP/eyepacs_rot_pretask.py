@@ -30,9 +30,9 @@ class RotEyepacsPretaskSet(PTPBase):
         # load data from .npy
         self.all_images = []
         if self.flag == 'train':
-            self.root_dir = '../data/Kaggle/train_process/train_eh_1024'
+            self.root_dir = os.path.join(self.base_dir, 'train_1024')
         else:
-            self.root_dir = '../data/Kaggle/test_process/test_eh_1024'
+            self.root_dir = os.path.join(self.base_dir, 'test_1024')
 
         with open(os.path.join(self.base_dir, flag + '.csv')) as f:
             reader = csv.reader(f)
@@ -95,23 +95,3 @@ class RotEyepacsPretaskSet(PTPBase):
         rotated_input, label = self.rotate_tensor(image_tensor)
 
         return rotated_input, torch.from_numpy(np.array(label))
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    args = parser.parse_args()
-    args.input_size = [512, 512]
-    args.class_num = 4
-    args.im_channel = 3
-    args.ratio = 0.8
-    dataset = RotEyepacsPretaskSet(args, base_dir='../../data/Kaggle/MG_gradable_right', flag="train")
-    dataloader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=False)
-    count = 0
-    for i, sample in tqdm(enumerate(dataloader)):
-        input, gt, index = sample
-        print(input.size(), gt.size())
-        save_tensor2image(input[0], 'datasets_2D_ROT_right/', 'input' + str(i))
-        print('********', i, gt[0], index[0])
-        # save_tensor2image(gt_img, 'datasets_2D_2D_ROT_right/', 'gt' + str(i))
-        if i > 10:
-            break
