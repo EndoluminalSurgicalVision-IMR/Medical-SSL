@@ -12,6 +12,9 @@ class Path(object):
         elif dataset == 'eyepacs_rot_pretask' or dataset == 'eyepacs_rpl_pretask' or \
                 dataset == 'eyepacs_jigsaw_pretask' or dataset=='eyepacs_ae_pretask':
             return '../data/Kaggle/MG_gradable_right'
+        
+        elif dataset == 'drive_seg':
+            return '../data/DRIVE'
 
         else:
             print('Dataset {} not available.'.format(dataset))
