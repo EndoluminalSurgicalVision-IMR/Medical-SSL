@@ -11,20 +11,18 @@ class RotTrainer(BaseTrainer):
         super(RotTrainer, self).__init__(config)
         assert config.model == 'Simple'
         self.num_rotations_per_patch = self.config.num_rotations_per_patch
-
+        
     def set_input(self, sample):
-        input, target = sample
-        # print(input.size(), target.size())
-        if self.config.num_rotations_per_patch > 1:
-            batch_size, rotations, c, x, y, z = input.size()
-            input = input.view([batch_size * rotations, c, x, y, z])
-            target = target.view([batch_size * rotations])
-            self.input = input.to(self.device)
-            self.target = target.to(self.device)
-        else:
-            self.input = input.to(self.device)
-            self.target = target.to(self.device)
-
+    input, target = sample
+    if self.config.network.find('3d') != -1:
+        batch_size, rotations, c, x, y, z = input.size()
+        input = input.view([batch_size * rotations, c, x, y, z])
+        target = target.view([batch_size * rotations])
+        self.input = input.to(self.device)
+        self.target = target.to(self.device)
+    else:
+        self.input = input.to(self.device)
+        self.target = target.to(self.device)
 
     def train(self):
         # to track the training loss as the model trains
@@ -94,20 +92,13 @@ class RotTrainer(BaseTrainer):
                     best_acc = valid_acc
                     num_epoch_no_improvement = 0
                     # save model
-                    # torch.save({
-                    #     'epoch': epoch + 1,
-                    #     'state_dict': self.model.state_dict(),
-                    #     'optimizer': self.optimizer.state_dict()
-                    # }, os.path.join(self.recorder.save_dir, "Genesis_Chest_CT.pth"))
-                    self.save_state_dict(epoch+1,  os.path.join(self.recorder.save_dir, "SSM_CT.pth"))
-                    self.recorder.logger.info("Saving model{} ".format(os.path.join(self.recorder.save_dir, "SSM_CT.pt")))
+                    self.save_state_dict(epoch+1,  os.path.join(self.recorder.save_dir, "SSM_ROT.pth"))
+                    self.recorder.logger.info("Saving model{} ".format(os.path.join(self.recorder.save_dir, "SSM_ROT.pth")))
                 else:
                     self.recorder.logger.info("Validation metric does not decrease from {:.4f}, num_epoch_no_improvement {}".format(best_acc,
                                                                                                               num_epoch_no_improvement))
                     num_epoch_no_improvement += 1
-                # if num_epoch_no_improvement == self.config.patience:
-                #     self.recorder.logger.info("Early Stopping")
-                #     break
+              
                 sys.stdout.flush()
 
         self.recorder.logger_shutdown()
