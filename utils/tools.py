@@ -356,3 +356,16 @@ def one_hot_reverse(one_hot_label):
         label[one_hot_label[i, :] == 1] = np.int32(i + 1)
     return label
 
+def select_target_type(y, criterion):
+    # convert type of target according to criterion
+    if criterion in ['ce', 'kappa']:
+        y = y.long()
+    elif criterion in ['mse', 'mae', 'smooth_L1']:
+        y = y.float()
+    elif criterion in ['focal_loss']:
+        y = y.to(dtype=torch.int64)
+    else:
+        raise NotImplementedError('Not implemented criterion.')
+    return y 
+
+
