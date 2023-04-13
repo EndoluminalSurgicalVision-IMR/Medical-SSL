@@ -86,13 +86,8 @@ class JigSawTrainer(BaseTrainer):
                 best_acc = order_valid_acc
                 num_epoch_no_improvement = 0
                 # save model
-                # torch.save({
-                #     'epoch': epoch + 1,
-                #     'state_dict': self.model.state_dict(),
-                #     'optimizer': self.optimizer.state_dict()
-                # }, os.path.join(self.recorder.save_dir, "Genesis_Chest_CT.pth"))
-                self.save_state_dict(epoch+1,  os.path.join(self.recorder.save_dir, "RCB_CT.pth"))
-                self.recorder.logger.info("Saving model{} ".format(os.path.join(self.recorder.save_dir, "RCB_CT.pth")))
+                self.save_state_dict(epoch+1,  os.path.join(self.recorder.save_dir, "Jigsaw.pth"))
+                self.recorder.logger.info("Saving model{} ".format(os.path.join(self.recorder.save_dir, "Jigsaw.pth")))
             else:
                 self.recorder.logger.info("Validation acc does not increase from {:.4f}, num_epoch_no_improvement {}".format(best_acc,
                                                                                                           num_epoch_no_improvement))
