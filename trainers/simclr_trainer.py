@@ -11,8 +11,6 @@ import torch.backends.cudnn as cudnn
 import torch.nn as nn
 from collections import OrderedDict
 
-
-from datasets_3D import get_dataloder_3D, datasets_dict_3D
 from networks import get_networks, networks_dict
 from models import get_models, models_dict
 
@@ -42,11 +40,14 @@ class SimCLRTrainer(BaseTrainer):
 
         # Whether or not to use 16-bit precision GPU trainin
         self.fp16_precision = True
-
-    def init_model(self):
+        
+     def init_model(self):
         self.model = get_networks(self.config)
         dim_mlp = self.model.fc[0].weight.shape[1]
-        assert dim_mlp == 512
+        if '3d' in self.config.network:
+            assert dim_mlp == 512
+        else:
+            assert dim_mlp == 1024
         self.model.fc = nn.Sequential(nn.Linear(dim_mlp, dim_mlp),
                                       nn.ReLU(),
                                       nn.Linear(dim_mlp, 256))
