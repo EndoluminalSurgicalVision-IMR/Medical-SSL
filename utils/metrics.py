@@ -192,3 +192,151 @@ def dice(im1, im2, empty_score=1.0):
     return 2. * intersection.sum() / im_sum
 
 
+class ClsEstimator():
+    """
+    Adpated from https://github.com/YijinHuang/pytorch-classification/
+    """
+
+    def __init__(self, criterion, num_classes, labels, thresholds=None):
+        self.criterion = criterion
+        self.num_classes = num_classes
+        self.labels = labels
+        self.thresholds = [-0.5 + i for i in range(num_classes)] if not thresholds else thresholds
+
+        self.reset()  # intitialization
+
+    def update(self, predictions, targets):
+        targets = targets.data.cpu()
+        predictions = predictions.data.cpu()
+        predictions = self.to_prediction(predictions)
+
+        # update metrics
+        self.num_samples += len(predictions)
+        self.correct += (predictions == targets).sum().item()
+        for i, p in enumerate(predictions):
+            self.conf_mat[int(targets[i])][int(p.item())] += 1
+
+    def get_accuracy(self, digits=-1):
+        acc = self.correct / self.num_samples
+        acc = acc if digits == -1 else round(acc, digits)
+        return acc
+
+    def get_kappa(self, digits=-1):
+        kappa = quadratic_weighted_kappa(self.conf_mat)
+        kappa = kappa if digits == -1 else round(kappa, digits)
+        return kappa
+
+    def reset(self):
+        self.correct = 0
+        self.num_samples = 0
+        self.conf_mat = np.zeros((self.num_classes, self.num_classes), dtype=int)
+
+    def to_prediction(self, predictions):
+        if self.criterion in ['ce', 'focal_loss', 'kappa']:
+            predictions = torch.tensor(
+                [torch.argmax(p) for p in predictions]
+            ).long()
+        elif self.criterion in ['mse', 'mae', 'smooth_L1']:
+            predictions = torch.tensor(
+                [self.classify(p.item()) for p in predictions]
+            ).float()
+        else:
+            raise NotImplementedError('Not implemented criterion.')
+
+        return predictions
+
+    def classify(self, predict):
+        thresholds = self.thresholds
+        predict = max(predict, thresholds[0])
+        for i in reversed(range(len(thresholds))):
+            if predict >= thresholds[i]:
+                return i
+
+    def summary(self): 
+        # calculate accuracy
+        sum_TP = 0
+        n = np.sum(self.conf_mat)
+        for i in range(self.num_classes):
+            sum_TP += self.conf_mat[i, i]  
+        acc = sum_TP / n 
+        print("The model accuracy is ", acc)
+        
+        # kappa
+        sum_po = 0
+        sum_pe = 0
+        for i in range(len(self.conf_mat[0])):
+            sum_po += self.conf_mat[i][i]
+            row = np.sum(self.conf_mat[i, :])
+            col = np.sum(self.conf_mat[:, i])
+            sum_pe += row * col
+        po = sum_po / n
+        pe = sum_pe / (n * n)
+        kappa = round((po - pe) / (1 - pe), 3)
+        print("The model kappa is: ", kappa)
+        print("The confusion matrix is: ", self.conf_mat)
+
+        # precision, recall, specificity
+        table = PrettyTable() 
+        table.field_names = ["", "Precision", "Recall", "Specificity"]
+        for i in range(self.num_classes):  
+            TP = self.conf_mat[i, i]
+            FP = np.sum(self.conf_mat[:, i]) - TP
+            FN = np.sum(self.conf_mat[i, :]) - TP
+            TN = np.sum(self.conf_mat) - TP - FP - FN
+
+            Precision = round(TP / (TP + FP), 3) if TP + FP != 0 else 0.
+            Recall = round(TP / (TP + FN), 3) if TP + FN != 0 else 0.
+            Specificity = round(TN / (TN + FP), 3) if TN + FP != 0 else 0.
+
+            table.add_row([self.labels[i], Precision, Recall, Specificity])
+        print(table)
+        return str(acc)
+
+    def plot(self, path): 
+        matrix = self.conf_mat
+        plt.imshow(matrix, cmap=plt.cm.Blues)
+        plt.xticks(range(self.num_classes), self.labels, rotation=45)
+        plt.yticks(range(self.num_classes), self.labels)
+        plt.colorbar()
+        plt.xlabel('Predicted Labels')
+        plt.ylabel('True Labels')
+        plt.title('Confusion matrix (acc=' + self.summary() + ')')
+
+        thresh = matrix.max() / 2
+        for x in range(self.num_classes):
+            for y in range(self.num_classes):
+                info = int(matrix[y, x])
+                plt.text(x, y, info,
+                         verticalalignment='center',
+                         horizontalalignment='center',
+                         color="white" if info > thresh else "black")
+        plt.tight_layout()
+        plt.savefig(path + '/confusion_matrix.png')
+
+
+def quadratic_weighted_kappa(conf_mat):
+    print('confusion matrix', conf_mat)
+    assert conf_mat.shape[0] == conf_mat.shape[1]
+    cate_num = conf_mat.shape[0]
+
+    # Quadratic weighted matrix
+    weighted_matrix = np.zeros((cate_num, cate_num))
+    for i in range(cate_num):
+        for j in range(cate_num):
+            weighted_matrix[i][j] = 1 - float(((i - j) ** 2) / ((cate_num - 1) ** 2))
+
+    # Expected matrix
+    ground_truth_count = np.sum(conf_mat, axis=1)
+    pred_count = np.sum(conf_mat, axis=0)
+    expected_matrix = np.outer(ground_truth_count, pred_count)
+
+    # Normalization
+    conf_mat = conf_mat / conf_mat.sum()
+    expected_matrix = expected_matrix / expected_matrix.sum()
+
+    observed = (conf_mat * weighted_matrix).sum()
+    expected = (expected_matrix * weighted_matrix).sum()
+
+    return (observed - expected) / (1 - expected)
+
+
