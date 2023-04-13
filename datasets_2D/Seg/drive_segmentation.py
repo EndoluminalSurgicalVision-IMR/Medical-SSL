@@ -52,11 +52,11 @@ class SegDRIVESet(SegmentationBase):
         self.transform = ToTensor()
 
     def __getitem__(self, index):
-        image_path = self.root_dir+'/images_eh_in_mask/' + self.all_images[index]
+        image_path = self.root_dir + '/images_eh_in_mask/' + self.all_images[index]
         name =  self.all_images[index][:2]
-        mask_path = self.root_dir+'/masks/'+self.all_images[index][:-4]+'_mask.gif'
-        label_path = self.root_dir+'/labels/'+name+'_manual1.gif'
-        # print(image_path, label_path, mask_path)
+        mask_path = self.root_dir + '/masks/' + self.all_images[index][:-4] + '_mask.gif'
+        label_path = self.root_dir + '/labels/' + name + '_manual1.gif'
+       
         if self.im_channel == 3:
             image = Image.open(image_path).convert('RGB')
         else:
