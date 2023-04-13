@@ -2,10 +2,7 @@
 class Path(object):
     @staticmethod
     def db_root_dir(dataset):
-        if dataset == 'eyepacs_cls_per25':
-            return '../data/Kaggle/per25_split_gradable'
-
-        elif dataset == 'eyepacs_cls_per10':
+        if dataset == 'eyepacs_cls_per10':
             return '../data/Kaggle/per10_split_gradable'
 
         elif dataset == 'eyepacs_mg_pretask' or dataset=='eyepacs_cl_pretask'  \
