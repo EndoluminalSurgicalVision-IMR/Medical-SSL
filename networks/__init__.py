@@ -1,15 +1,18 @@
 import argparse
 from torch.nn import init
 from collections.abc import Iterable
-from networks.unet import U_Net, U_Net_Encoder
+from networks.unet import UNet2D, U_Net_Encoder, UNet2D_Dense, UNet2D_RPL, UNet2D_JigSaw
 from networks.unet3d import UNet3D, UNet3D_Dense, UNet3D_Encoder, UNet3D_wo_skip, UNet3D_RPL, UNet3D_JigSaw, UNet3D_RKB, UNet3D_RKBP
 from networks.PCRL import PCRLModel
 from networks.PCRL3d import PCRLModel3d
 from networks.MyPCLR3d import PCRLEncoder3d, PCRLDecoder3d, PCRLDecoder3d_wo_skip
-
+from networks.MyPCRL2d import PCRLEncoder2d, PCRLDecoder2d
 
 networks_dict= {
-    'unet': U_Net,
+    'unet_2d': UNet2D,
+    'unet_2d_dense': UNet2D_Dense,
+    'unet_2d_rpl': UNet2D_RPL,
+    'unet_2d_jigsaw':UNet2D_JigSaw,
     'unet_3d': UNet3D,
     'unet_3d_wo_skip': UNet3D_wo_skip,
     'unet_encoder': U_Net_Encoder,
@@ -22,7 +25,9 @@ networks_dict= {
     'pcrl': PCRLModel,
     'pcrl_3d': PCRLModel3d,
     'pcrl_3d_encoder': PCRLEncoder3d,
-    'pcrl_3d_decoder': PCRLDecoder3d
+    'pcrl_3d_decoder': PCRLDecoder3d,
+    'pcrl_2d_encoder': PCRLEncoder2d,
+    'pcrl_2d_decoder': PCRLDecoder2d,
 }
 
 
@@ -61,13 +66,19 @@ def get_networks(args):
         print(network_name)
         network = networks_dict[network_name](args.im_channel, args.projection_dim)
 
-    elif network_name == 'pcrl_3d' or network_name == 'pcrl_3d_encoder' or network_name == 'pcrl_3d_decoder':
+    elif network_name == 'pcrl_3d' or network_name == 'pcrl_3d_encoder' or network_name == 'pcrl_3d_decoder'  or network_name == 'pcrl_2d_encoder' or network_name == 'pcrl_2d_decoder':
         print('student:', args.is_student)
         network = networks_dict[network_name](in_channels=args.im_channel, n_class=args.class_num,
                                               student=args.is_student, norm ='bn')
 
     elif network_name == 'unet_3d_jigsaw' or network_name == 'unet_3d_rkb'  or network_name == 'unet_3d_rkbp':
         network = networks_dict[network_name](in_channels=args.im_channel, order_n_class=args.order_class_num, num_cubes=args.num_grids_per_axis ** 3)
+        
+   elif network_name == 'unet_2d_jigsaw' :
+        network = networks_dict[network_name](im_ch=args.im_channel, output_ch=args.order_class_num,
+                                              num_cubes=args.num_grids_per_axis ** 2)
+
+
     else:
         network = networks_dict[network_name](args.im_channel, args.class_num, args.normalization)
 
@@ -124,5 +135,3 @@ if __name__ == "__main__":
         args.network= name_list[i]
         model = get_networks(args)
         #print(model)
-
-
