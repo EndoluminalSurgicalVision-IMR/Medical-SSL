@@ -27,7 +27,6 @@ class RotEyepacsPretaskSet(PTPBase):
         self.config = config
         self.flag = flag
         self.crop_size = config.input_size
-        # load data from .npy
         self.all_images = []
         if self.flag == 'train':
             self.root_dir = os.path.join(self.base_dir, 'train_1024')
