@@ -30,7 +30,7 @@ class BYOL(nn.Module):
     """
     Build a BYOL model. https://arxiv.org/abs/2006.07733
     """
-    def __init__(self, encoder_q, hidden_dim=4096, pred_dim=256, m=0.996):
+    def __init__(self, encoder_q, hidden_dim=4096, pred_dim=256, encoder_channel=512, m=0.996):
         """
         encoder_q: online network
         encoder_k: target network
@@ -47,13 +47,13 @@ class BYOL(nn.Module):
         # projector
         # encoder_dim = self.encoder_q.fc.weight.shape[1]
         self.encoder_q.fc = nn.Sequential(#self.encoder_q.fc,
-                                          nn.Linear(512, hidden_dim),
+                                          nn.Linear(encoder_channel, hidden_dim),
                                           nn.BatchNorm1d(hidden_dim),
                                           nn.ReLU(inplace=True),
                                           nn.Linear(hidden_dim, pred_dim))
 
         self.encoder_k.fc = nn.Sequential(# self.encoder_k.fc,
-                                          nn.Linear(512, hidden_dim),
+                                          nn.Linear(encoder_channel, hidden_dim),
                                           nn.BatchNorm1d(hidden_dim),
                                           nn.ReLU(inplace=True),
                                           nn.Linear(hidden_dim, pred_dim))
