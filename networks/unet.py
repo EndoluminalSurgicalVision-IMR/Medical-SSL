@@ -1,3 +1,4 @@
+# Copy from https://github.com/lswzjuer/NAS-WDAN/blob/68139048ef3fb2e9684cb9c60581367835c0fe9e/models/unet.py
 import torch.nn as nn
 import torch
 from torchsummary import summary
@@ -37,11 +38,11 @@ class up_conv(nn.Module):
         return x
 
 
-class U_Net(nn.Module):
+class UNet2D(nn.Module):
     def __init__(self, img_ch=3, output_ch=1, normalization='sigmoid'):
-        super(U_Net, self).__init__()
-        nb_filter = [64, 128, 256, 512,1024]
-        #nb_filter = [32,64, 128, 256, 512]
+        super(UNet2D, self).__init__()
+        nb_filter = [64, 128, 256, 512, 1024]
+        # nb_filter = [32,64, 128, 256, 512]
 
         self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.Conv1 = conv_block(ch_in=img_ch, ch_out=nb_filter[0])
@@ -65,7 +66,7 @@ class U_Net(nn.Module):
         self.Conv_1x1 = nn.Conv2d(nb_filter[0], output_ch, kernel_size=1, stride=1, padding=0)
 
         if normalization == 'sigmoid':
-            assert output_ch == 1
+            # assert output_ch == 1
             self.normalization = nn.Sigmoid()
         elif normalization == 'softmax':
             assert output_ch > 1
@@ -123,13 +124,12 @@ class U_Net(nn.Module):
         return module_dict
 
 
-class U_Net_Encoder(nn.Module):
-    def __init__(self, img_ch=1, projection_size=128):
-        super(U_Net_Encoder, self).__init__()
+class UNet2D_Dense(nn.Module):
+    def __init__(self, img_ch=1, output_ch=1, normalization=None):
+        super(UNet2D_Dense, self).__init__()
         nb_filter = [64, 128, 256, 512, 1024]
-        hidden_size = nb_filter[4]
-        projection_size = projection_size
-        #nb_filter = [32,64, 128, 256, 512]
+        hidden_size = 2048
+        self.num_class = output_ch
         self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.Conv1 = conv_block(ch_in=img_ch, ch_out=nb_filter[0])
         self.Conv2 = conv_block(ch_in=nb_filter[0], ch_out=nb_filter[1])
@@ -138,7 +138,23 @@ class U_Net_Encoder(nn.Module):
         self.Conv5 = conv_block(ch_in=nb_filter[3], ch_out=nb_filter[4])
 
         self.Avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.maxpool = nn.AdaptiveMaxPool2d((1, 1))
 
+        self.fc = nn.Sequential(
+            nn.Linear(1024, 2048),
+            nn.ReLU(inplace=True),
+            #nn.Dropout(0.5),
+            nn.Linear(2048, self.num_class))
+
+   
+        if normalization == 'sigmoid':
+            # assert self.num_class == 1
+            self.normalization = nn.Sigmoid()
+        elif normalization == 'softmax':
+            assert self.num_class > 1
+            self.normalization = nn.Softmax(dim=1)
+        else:
+            self.normalization = lambda x: x
 
     def forward(self, x):
         # encoding path
@@ -164,27 +180,198 @@ class U_Net_Encoder(nn.Module):
 
         # decoding + concat path
         x5_pool = self.Avgpool(x5)
+        # x5_pool = self.maxpool(x5)
+        x6 = torch.flatten(x5_pool, 1)
+        # out = self.projector(x6)
+        out = self.fc(x6)
+
+        return out
+
+    @staticmethod
+    def get_module_dicts():
+        encoder_layers = ['Conv1', 'Conv2', 'Conv3', 'Conv4', 'Conv5']
+        fc_layers = ['fc']
+        module_dict = {'encoder': encoder_layers,
+                       'fc': fc_layers}
+        return module_dict
+
+
+class U_Net_Encoder(nn.Module):
+    def __init__(self, img_ch=1, projection_size=128):
+        super(U_Net_Encoder, self).__init__()
+        nb_filter = [64, 128, 256, 512, 1024]
+        hidden_size = nb_filter[4]
+        projection_size = projection_size
+        self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.Conv1 = conv_block(ch_in=img_ch, ch_out=nb_filter[0])
+        self.Conv2 = conv_block(ch_in=nb_filter[0], ch_out=nb_filter[1])
+        self.Conv3 = conv_block(ch_in=nb_filter[1], ch_out=nb_filter[2])
+        self.Conv4 = conv_block(ch_in=nb_filter[2], ch_out=nb_filter[3])
+        self.Conv5 = conv_block(ch_in=nb_filter[3], ch_out=nb_filter[4])
+
+        self.Avgpool = nn.AdaptiveAvgPool2d((1, 1))
+
+        # self.projector = nn.Sequential(
+        #     nn.Linear(1024, hidden_size),
+        #     nn.BatchNorm1d(hidden_size),
+        #     nn.ReLU(inplace=True),
+        #     nn.Linear(hidden_size, projection_size)
+        # )
+
+    def forward(self, x):
+        # encoding path
+        features = []
+        x1 = self.Conv1(x)
+        features.append(x1)
+
+        x2 = self.Maxpool(x1)
+        x2 = self.Conv2(x2)
+        features.append(x2)
+
+        x3 = self.Maxpool(x2)
+        x3 = self.Conv3(x3)
+        features.append(x3)
+
+        x4 = self.Maxpool(x3)
+        x4 = self.Conv4(x4)
+        features.append(x4)
+
+        x5 = self.Maxpool(x4)
+        x5 = self.Conv5(x5)
+        features.append(x5)
+
+        # decoding + concat path
+        x5_pool = self.Avgpool(x5)
+        # representation = torch.flatten(x5_pool, 1)
+        # representation = self.projector(representation)
 
         return x5_pool
 
-def calc_parameters_count(model):
-    """
 
-    :param model:
-    :return: The number of params in model.(M)
-    """
-    return np.sum(np.prod(v.size()) for v in model.parameters())/ 1e6
+class UNet2D_RPL(nn.Module):
+    def __init__(self, img_ch=1, output_ch=1, normalization=None):
+        super( UNet2D_RPL, self).__init__()
+        nb_filter = [64, 128, 256, 512, 1024]
+        hidden_size = 2048
+        self.num_class = output_ch
+        self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.Conv1 = conv_block(ch_in=img_ch, ch_out=nb_filter[0])
+        self.Conv2 = conv_block(ch_in=nb_filter[0], ch_out=nb_filter[1])
+        self.Conv3 = conv_block(ch_in=nb_filter[1], ch_out=nb_filter[2])
+        self.Conv4 = conv_block(ch_in=nb_filter[2], ch_out=nb_filter[3])
+        self.Conv5 = conv_block(ch_in=nb_filter[3], ch_out=nb_filter[4])
+
+        self.Avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.maxpool = nn.AdaptiveMaxPool2d((1, 1))
+
+        self.fc6 = nn.Sequential(
+            nn.Linear(1024, hidden_size),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm1d(hidden_size),
+        )
+        self.fc = nn.Sequential(
+            nn.Linear(2 * hidden_size, hidden_size),
+            nn.ReLU(inplace=True),
+
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(inplace=True),
+
+            nn.Linear(hidden_size, 8)
+        )
+        if normalization == 'sigmoid':
+            self.normalization = nn.Sigmoid()
+        elif normalization == 'softmax':
+            assert self.num_class > 1
+            self.normalization = nn.Softmax(dim=1)
+        else:
+            self.normalization = lambda x: x
+
+    def forward_once(self, x):
+        # encoding path
+        x1 = self.Conv1(x)
+        x2 = self.Maxpool(x1)
+        x2 = self.Conv2(x2)
+        x3 = self.Maxpool(x2)
+        x3 = self.Conv3(x3)
+        x4 = self.Maxpool(x3)
+        x4 = self.Conv4(x4)
+        x5 = self.Maxpool(x4)
+        x5 = self.Conv5(x5)
+        # decoding + concat path
+        x5_pool = self.Avgpool(x5)
+        output = x5_pool.view(x5_pool.size()[0], -1)
+        output = self.fc6(output)
+        return output
+
+    def forward(self, uniform_patch, random_patch):
+        output_fc6_uniform = self.forward_once(uniform_patch)
+        output_fc6_random = self.forward_once(random_patch)
+        output = torch.cat((output_fc6_uniform, output_fc6_random), 1)
+        output = self.fc(output)
+        return output
 
 
+class UNet2D_JigSaw(nn.Module):
+    def __init__(self, im_ch=1, output_ch=100, num_cubes=9, normalization=None):
+        super(UNet2D_JigSaw, self).__init__()
+        nb_filter = [64, 128, 256, 512, 1024]
+        hidden_size = 4096
+        self.num_class = output_ch
+        self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.Conv1 = conv_block(ch_in=im_ch, ch_out=nb_filter[0])
+        self.Conv2 = conv_block(ch_in=nb_filter[0], ch_out=nb_filter[1])
+        self.Conv3 = conv_block(ch_in=nb_filter[1], ch_out=nb_filter[2])
+        self.Conv4 = conv_block(ch_in=nb_filter[2], ch_out=nb_filter[3])
+        self.Conv5 = conv_block(ch_in=nb_filter[3], ch_out=nb_filter[4])
 
-if __name__=="__main__":
-    model = U_Net(img_ch=1, output_ch=3, normalization='softmax')
-    a = torch.randn([2, 1, 128, 128])
-    b = model(a)
-    print(b[0,:, 2, 2])
+        self.Avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc6 = nn.Sequential(
+            nn.Linear(1024, 512),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm1d(512),
+        )
 
+        self.order_fc = nn.Sequential(
+            nn.Linear(num_cubes * 512, hidden_size),
+            nn.ReLU(inplace=True),
+            nn.Linear(4096, self.num_class)
+        )
+        self.num_cubes = num_cubes
 
+        if normalization == 'sigmoid':
+            self.normalization = nn.Sigmoid()
+        elif normalization == 'softmax':
+            assert self.num_class > 1
+            self.normalization = nn.Softmax(dim=1)
+        else:
+            self.normalization = lambda x: x
 
+    def forward_once(self, x):
+        x1 = self.Conv1(x)
+        x2 = self.Maxpool(x1)
+        x2 = self.Conv2(x2)
+        x3 = self.Maxpool(x2)
+        x3 = self.Conv3(x3)
+        x4 = self.Maxpool(x3)
+        x4 = self.Conv4(x4)
+        x5 = self.Maxpool(x4)
+        x5 = self.Conv5(x5)
+        dense_x = self.Avgpool(x5)
+        dense_x = torch.flatten(dense_x, 1, -1)
+        logits = self.fc6(dense_x)
+        return logits
 
-    #summary(model, input_size=[(1, 320, 320)], batch_size=1, device="cpu")
+    def forward(self, cubes):
+        # [B, 9, C, X, Y]
+        cubes = cubes.transpose(0, 1)
+        # [9, B, C, X, Y]
+        feats = []
+        for i in range(self.num_cubes):
+            output_fc6 = self.forward_once(cubes[i])
+            feats.append(output_fc6)
 
+        feats = torch.cat(feats, 1)
+        # [B, K]
+        order_logits = self.order_fc(feats)
+
+        return order_logits
