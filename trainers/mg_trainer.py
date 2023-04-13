@@ -74,8 +74,8 @@ class MGTrainer(BaseTrainer):
                 best_loss = valid_loss
                 num_epoch_no_improvement = 0
                 # save model
-                self.save_state_dict(epoch+1,  os.path.join(self.recorder.save_dir, "Genesis_Chest_CT.pth"))
-                self.recorder.logger.info("Saving model{} ".format(os.path.join(self.recorder.save_dir, "Genesis_Chest_CT.pt")))
+                self.save_state_dict(epoch+1,  os.path.join(self.recorder.save_dir, "Mode_Genesis.pth"))
+                self.recorder.logger.info("Saving model{} ".format(os.path.join(self.recorder.save_dir, "Mode_Genesis.pth")))
             else:
                 self.recorder.logger.info("Validation loss does not decrease from {:.4f}, num_epoch_no_improvement {}".format(best_loss,
                                                                                                           num_epoch_no_improvement))
