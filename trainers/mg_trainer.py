@@ -58,15 +58,6 @@ class MGTrainer(BaseTrainer):
                     pred = self.model(image)
                     v_loss = self.criterion(pred, gt)
                     valid_losses.append(v_loss.item())
-                    if epoch % 20 == 0 and itr % 500 == 0:
-                        input_np = image[0][0].cpu().numpy()
-                        pred_np = pred[0][0].cpu().numpy()
-                        gt_np = gt[0][0].cpu().numpy()
-                        image_index = str(itr)
-                        assert len(input_np.shape) == 3
-                        save_path = os.path.join(self.recorder.save_dir, 'test_patch_results' + str(epoch))
-                        # Save sample images
-                        self.recorder.save_3D_images(input_np, pred_np, gt_np, image_index, save_path)
             # logging
             train_loss = np.average(train_losses)
             valid_loss = np.average(valid_losses)
@@ -108,14 +99,6 @@ class MGTrainer(BaseTrainer):
                 gt = gt.to(self.device)
                 pred = self.model(image)
                 mse.append(self.criterion(pred, gt).item())
-                if itr % 10 == 0:
-                    input_np = image[0][0].cpu().numpy()
-                    pred_np = pred[0][0].cpu().numpy()
-                    gt_np = gt[0][0].cpu().numpy()
-                    image_index = str(itr)
-                    assert len(input_np.shape) == 3
-                    save_path = os.path.join(self.recorder.save_dir, 'test_patch_results_'+str(epoch))
-                    self.recorder.save_3D_images(input_np, pred_np, gt_np, image_index, save_path)
         avg_mse = np.average(mse)
         print("VAL MSE:", avg_mse)
         return avg_mse
