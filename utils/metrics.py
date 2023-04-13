@@ -38,7 +38,11 @@ class SegMetric_Numpy(object):
         SR = (SR > threshold).astype(int)
         GT = (GT == np.max(GT)).astype(int)
         corr = np.sum(SR == GT)
-        tensor_size = SR.shape[0] * SR.shape[1] * SR.shape[2]
+        #tensor_size = SR.shape[0] * SR.shape[1] * SR.shape[2]
+        if len(SR.shape) == 2:
+            tensor_size = SR.shape[0] * SR.shape[1]
+        else:
+            tensor_size =  SR.shape[0] * SR.shape[1] * SR.shape[2]
         self.acc_i = float(corr) / float(tensor_size)
 
         # TP : True Positive
@@ -58,7 +62,52 @@ class SegMetric_Numpy(object):
         Inter = np.sum((SR + GT) == 2)
         Union = np.sum((SR + GT) >= 1)
 
-        print('inter union', Inter, Union)
+        self.JS_i = float(Inter) / (float(Union) + 1e-6)
+        self.DC_i = float(2 * Inter) / (float(np.sum(SR) + np.sum(GT)) + 1e-6)
+
+        self.acc += self.acc_i
+        self.SE += self.SE_i
+        self.SP += self.SP_i
+        self.PC += self.PC_i
+        self.F1 += self.F1_i
+        self.JS += self.JS_i
+        self.DC += self.DC_i
+        self.length += 1
+
+
+    def update_in_FOV(self, SR, GT, FOV_Mask, threshold=0.5):
+        """
+            SR:  Segmentation Result, a ndarray with the shape of [D, H, W]
+            GT:  Ground Truth , a ndarray with the shape of [D, H, W]
+
+        return:
+            acc, SE, SP, PC, F1, js, dc
+        """
+        assert SR.shape == GT.shape == FOV_Mask.shape
+        FOV_Mask = (FOV_Mask==1).astype(int)
+        SR = (SR > threshold).astype(int)*FOV_Mask
+        GT = (GT == np.max(GT)).astype(int)*FOV_Mask
+        corr = np.sum((SR == GT)&(FOV_Mask==1))
+        tensor_size = np.sum(FOV_Mask)
+        self.acc_i = float(corr) / float(tensor_size)
+
+        # TP : True Positive
+        # FN : False Negative
+        TP = ((SR == 1) & (GT == 1))*FOV_Mask
+        FN = ((SR == 0) & (GT == 1))*FOV_Mask
+        # TN : True negative
+        # FP : False Positive
+        TN = ((SR == 0) & (GT == 0))*FOV_Mask
+        FP = ((SR == 1) & (GT == 0))*FOV_Mask
+
+        self.SE_i = float(np.sum(TP)) / (float(np.sum(TP + FN)) + 1e-6)
+        self.SP_i = float(np.sum(TN)) / (float(np.sum(TN + FP)) + 1e-6)
+        self.PC_i = float(np.sum(TP)) / (float(np.sum(TP + FP)) + 1e-6)
+        self.F1_i = 2 * self.SE_i * self.PC_i / (self.SE_i + self.PC_i + 1e-6)
+
+        Inter = np.sum((SR + GT) == 2)
+        Union = np.sum((SR + GT) >= 1)
+
         self.JS_i = float(Inter) / (float(Union) + 1e-6)
         self.DC_i = float(2 * Inter) / (float(np.sum(SR) + np.sum(GT)) + 1e-6)
 
