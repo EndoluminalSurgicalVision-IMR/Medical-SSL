@@ -20,6 +20,7 @@ import pandas as pd
 from monai.utils import set_determinism
 
 from datasets_3D import get_dataloder_3D, datasets_dict_3D
+from datasets_2D import get_dataloder_2D, datasets_dict_2D
 from networks import get_networks, networks_dict, freeze_by_keywords, unfreeze_by_keywords
 from models import get_models, models_dict
 from utils.losses import CE_Dice_Loss, BCE_Dice_Loss, SoftDiceLoss, DiceLoss, MultiDiceLoss, BCEDiceLoss, TverskyLoss
@@ -122,9 +123,12 @@ class BaseTrainer(object):
             torch.backends.cudnn.benchmark = self.config.benchmark
 
     def init_dataloader(self):
-        self.train_dataset, self.train_dataloader = get_dataloder_3D(self.config, flag="train", drop_last=True)
-        self.eval_dataset, self.eval_dataloader = get_dataloder_3D(self.config, flag="valid", drop_last=False)
-
+        if '3d' in self.config.network:
+            self.train_dataset, self.train_dataloader = get_dataloder_3D(self.config, flag="train", drop_last=True)
+            self.eval_dataset, self.eval_dataloader = get_dataloder_3D(self.config, flag="valid", drop_last=False)
+        else:
+            self.train_dataset, self.train_dataloader = get_dataloder_2D(self.config, flag="train", drop_last=True)
+            self.eval_dataset, self.eval_dataloader = get_dataloder_2D(self.config, flag="valid", drop_last=False)
     def init_model(self):
         if self.config.model == 'Simple':
             self.network = get_networks(self.config)
