@@ -22,8 +22,6 @@ class JigSawEyepacsPretaskSet(JigsawBase):
         super(JigSawEyepacsPretaskSet, self).__init__(config, base_dir, flag)
         self.config = config
         self.flag = flag
-        # self.input_size = config.input_size
-        # self.cube_size = config.cube_size
         self.ratio = config.ratio
         self.im_channel = config.im_channel
 
@@ -48,13 +46,9 @@ class JigSawEyepacsPretaskSet(JigsawBase):
             self.all_images = self.all_images[:int(self.ratio * len(self.all_images))]
         else:
             self.all_images = self.all_images[:3000]
-
-        # self.transform = transforms.Compose([
-        #     transforms.CenterCrop((720, 720)),
-        #     transforms.Resize((self.input_size[0], self.input_size[1])),
-        #     ToTensor()])
+            
         self.transform = transforms.Compose([
-            transforms.CenterCrop((720, 720)),  # 682
+            transforms.CenterCrop((720, 720)),  
             transforms.Resize((720 // 2, 720 // 2)),
             ToTensor()])
         ### Display status
@@ -74,22 +68,14 @@ class JigSawEyepacsPretaskSet(JigsawBase):
 
         image_tensor = self.transform(image)
 
-        # [C, H, W]
-        # input = image_tensor.numpy()
-
         # get all the num_grids **2 cubes
         all_cubes = self.crop_cubes_2d(image_tensor,
                                        flag=self.flag,
                                        cubes_per_side=self.num_grids_per_axis,
                                        cube_jitter_xy=6)
 
-        # print('cubes', all_cubes.size(), all_cubes.min(), all_cubes.max())
-
-        # # Task1: Permutate the order of cubes
+        # permutate the order of cubes
         rearranged_cubes, order_label = self.rearrange(all_cubes, self.K_permutations)
 
         return rearranged_cubes, torch.from_numpy(np.array(order_label)) 
-
-
-
 
