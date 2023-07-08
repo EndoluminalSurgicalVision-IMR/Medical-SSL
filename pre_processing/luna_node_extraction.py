@@ -404,19 +404,15 @@ def get_test_csv(root_dir, test_fold, save_path, split='test'):
 if __name__ == '__main__':
 
     ### Step1. First crop [48, 48, 48] cubes according to the candidates.csv
-
-    # get_node_classify_org() = get_node_classify(), there are some differences in the processing of candidates.csv file.
-
-    # get_node_classify()
-    # get_node_classify_org()
+    get_node_classify()
 
     ### After Step1,  we can get two-category dirs: luna_classification/1 (1351) and luna_classification/0 (549714)
 
     ### Step2. Since serious class-imbalance exists in this task, the class 1 is augmented 40 times..
 
     # from pre_processing.dataaugmentation.ImageAugmentation import DataAug3D
-    # aug = DataAug3D(rotation=45, width_shift=0.05, height_shift=0.05, depth_shift=0, zoom_range=0)
-    # aug.DataAugmentation_from_dirpath('../../Data/LUNA_Classification/1/', number=40, aug_path='../../Data/LUNA_Classification/1_aug')
+    aug = DataAug3D(rotation=45, width_shift=0.05, height_shift=0.05, depth_shift=0, zoom_range=0)
+    aug.DataAugmentation_from_dirpath('../../Data/LUNA_Classification/1/', number=40, aug_path='../../Data/LUNA_Classification/1_aug')
     ## or use monai
     # augment(filepathX='../../Data/LUNA_Classification/1/', aug_number=10, aug_path='../../Data/LUNA_Classification/1_aug_monai')
 
@@ -429,10 +425,10 @@ if __name__ == '__main__':
     ### Get training dataset.
     get_train_csv(root_dir='../../Data/LUNA_Classification', train_fold=[0, 1, 2, 3, 4],
                   save_path='../../Data/LUNA_Classification/MG_split', aug_range=[0, 10])
-    # get_test_csv(root_dir='../../Data/LUNA_Classification', test_fold=[5, 6],
-    #              save_path='../../Data/LUNA_Classification/MG_split', split='valid')
-    # get_test_csv(root_dir='../../Data/LUNA_Classification', test_fold=[7, 8, 9],
-    #              save_path='../../Data/LUNA_Classification/MG_split', split='test')
+    get_test_csv(root_dir='../../Data/LUNA_Classification', test_fold=[5, 6],
+                 save_path='../../Data/LUNA_Classification/MG_split', split='valid')
+    get_test_csv(root_dir='../../Data/LUNA_Classification', test_fold=[7, 8, 9],
+                save_path='../../Data/LUNA_Classification/MG_split', split='test')
 
     #### After Step 3, we get :
     #### train.csv (0:66295 ; 1:34153; total: 100448)
