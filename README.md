@@ -47,7 +47,7 @@ Find the corresponding config files to different SSL pretext tasks in "configs/"
  ```python configs/luna_xxx_3d_config.py```
 
 
-### How to fine-tuning?
+### How to fine-tune?
 
 **Step1. Prepare the target dataset** 
 
