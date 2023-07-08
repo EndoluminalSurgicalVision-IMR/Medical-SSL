@@ -8,10 +8,10 @@ For PCRL pretext task;
 Luna dataset:
 for subset in `seq 0 9`
 do
-python -W ignore infinite_generator_3D.py \
+python -W ignore luna_pcrl_generator.py \
 --fold $subset \
 --scale 32 \
---data /mnt/dataset/shared/zongwei/LUNA16 \
+--data /data/LUNA2016
 --save generated_cubes
 done
 """
@@ -323,9 +323,6 @@ def load_sitk_with_resample(img_path):
     return newvol
 
 
-#
-# with Pool(2) as p:
-#     p.map(get_self_learning_data, [[0, 1, 2, 3, 4], [5, 6]])
-# get_self_learning_data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-# get_self_learning_data([fold])
-print(config.hu_max, config.hu_min)
+
+with Pool(2) as p:
+    p.map(get_self_learning_data, [[0, 1, 2, 3, 4], [5, 6]])
