@@ -34,7 +34,7 @@ Pre-Process the LUNA2016 dataset by the code in "pre_processing/":
   
     ```python -W ignore luna_infinite_generator_3D.py --fold $subset --scale 32 --data ../../Data/LUNA2016 --save generated_cubes```
    
-*   Contrastive SSL: PCRL/SimCLR/BYOL
+*   Contrastive SSL: PCRL/SimCLR/BYOL pretext tasks
   
     ```python luna_pcrl_generator.py --input_rows 64 --input_cols 64 --input_deps 32 --data ../../Data/LUNA2016 --save processedLUNA_save_path```
 
