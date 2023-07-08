@@ -4,8 +4,6 @@
 Cropping the CT volumes in LUNA2016 for RPL/ROT/Jigsaw/RKB/RKB+ pretext tasks.
 """
 
-# In[1]:
-
 
 import warnings
 
@@ -62,7 +60,6 @@ def get_self_learning_data(fold, data_path):
             itk_img = sitk.ReadImage(img_file)
             img_array = sitk.GetArrayFromImage(itk_img)
             img_array = img_array.transpose(2, 1, 0)
-
             x = generator_from_one_volume(img_array, org_data_size=[320, 320, 74])
             # print(os.path.split(img_file)[1][:-4])
             save_path = '../../Data/LUNA2016_cropped_x320y320z74/' + "subset" + str(index_subset)
@@ -76,6 +73,3 @@ for fold in [0, 1, 2, 3, 4, 5, 6]:
     print(">> Fold {}".format(fold))
     get_self_learning_data([fold], data_path='../../Data/LUNA2016')
 
-    #np.save(os.path.join('../../Data/LUNA2016_croppped', str(fold) + ".npy"), cube)
-
-#
