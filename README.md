@@ -52,7 +52,9 @@ Find the corresponding config files to different SSL pretext tasks in "configs/"
 **Step1. Prepare the target dataset** 
 
 **Step2. Pre-process the target dataset** 
+
 Example: For data processing in NCC task:
+
  ```python luna_node_extraction.py```
 
 **Step3. List the paths to the pre-processed datasets in "datasets_3D/paths.py"** 
@@ -61,7 +63,8 @@ Example: For data processing in NCC task:
 
 Find the corresponding config files to target tasks in "configs/", make sure the configs match your training setting and change the default pretrained_path to your own path:
 
-Example: For fine-tuning NCC task:
+Example: To fine-tune NCC task:
+
  ```python luna_ncc_3d_config.py```
  
 ### On going...
