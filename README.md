@@ -24,7 +24,7 @@ Store the LUNA2016 dataset in the path "../../Data/LUNA2016"
 
 **Step2. Pre-process the pretraining data for different pretext tasks.** 
 
-Pre-Process the LUNA2016 dataset by the code in the fold  pre_processing:
+Pre-Process the LUNA2016 dataset by the code in the fold pre_processing:
 
 * Predictive SSL: RPL/ROT/Jigsaw/RKB/ RKB+ pretext tasks
   
@@ -32,7 +32,7 @@ Pre-Process the LUNA2016 dataset by the code in the fold  pre_processing:
 
 *  Generative SSL: MG/AE pretext tasks
   
-    ```python -W ignore infinite_generator_3D.py --fold $subset --scale 32 --data ../../Data/LUNA2016 --save generated_cubes```
+    ```python -W ignore luna_infinite_generator_3D.py --fold $subset --scale 32 --data ../../Data/LUNA2016 --save generated_cubes```
    
 *   Contrastive SSL: PCRL/SimCLR/BYOL
   
@@ -59,9 +59,11 @@ Example: For data processing in NCC task:
 
 **Step4. Fine-tune a pretrained model on the target dataset.** 
 
-Find the corresponding config files to target tasks in "configs/" or write your own , make sure the configs match your training setting:
+Find the corresponding config files to target tasks in "configs/", make sure the configs match your training setting and change the default pretrained_path to your own path:
 
-
+Example: For fine-tuning NCC task:
+ ```python luna_ncc_3d_config.py```
+ 
 ### On going...
 We are still working on more implementations of self-supervised methods for medical image. Feel free to contribute!
 
