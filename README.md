@@ -24,7 +24,7 @@ Store the LUNA2016 dataset in the path "../../Data/LUNA2016"
 
 **Step2. Pre-process the pretraining data for different pretext tasks.** 
 
-Pre-Process the LUNA2016 dataset by the code in the fold pre_processing:
+Pre-Process the LUNA2016 dataset by the code in "pre_processing/":
 
 * Predictive SSL: RPL/ROT/Jigsaw/RKB/ RKB+ pretext tasks
   
@@ -38,7 +38,7 @@ Pre-Process the LUNA2016 dataset by the code in the fold pre_processing:
   
     ```python luna_pcrl_generator.py --input_rows 64 --input_cols 64 --input_deps 32 --data ../../Data/LUNA2016 --save processedLUNA_save_path```
 
-**Step3. List the paths to the pre-processed datasets in datasets_3D/paths.py** 
+**Step3. List the paths to the pre-processed datasets in "datasets_3D/paths.py"** 
 
 **Step4. Pretrain the pretxt tasks.** 
 
@@ -55,7 +55,7 @@ Find the corresponding config files to different SSL pretext tasks in "configs/"
 Example: For data processing in NCC task:
  ```python luna_node_extraction.py```
 
-**Step3. List the paths to the pre-processed datasets in datasets_3D/paths.py** 
+**Step3. List the paths to the pre-processed datasets in "datasets_3D/paths.py"** 
 
 **Step4. Fine-tune a pretrained model on the target dataset.** 
 
